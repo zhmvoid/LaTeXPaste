@@ -4,7 +4,7 @@
 
 ## 在线使用
 
-您可以直接访问[LaTeX公式代码复制器](https://example.com)在线使用（请替换为实际网址）。
+您可以直接访问[LaTeX公式代码复制器](https://zhmvoid.github.io/LaTeXPaste/)在线使用（请替换为实际网址）。
 
 ## 符号类别
 
