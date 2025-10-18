@@ -10,7 +10,7 @@
   <!-- 引入Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- 引入MathJax用于渲染LaTeX公式 -->
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <!-- Tailwind配置 -->
   <script>
@@ -35,33 +35,46 @@
   <!-- 自定义工具类 -->
   <style type="text/tailwindcss">
     @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .symbol-card {
-                @apply bg-white rounded-lg shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer border border-gray-100;
-            }
-            .symbol-display {
-                @apply text-2xl md:text-3xl my-2 text-center;
-            }
-            .category-btn {
-                @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-md;
-            }
-            .category-btn-active {
-                @apply bg-primary text-white;
-            }
-            .category-btn-inactive {
-                @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
-            }
-            .fade-out {
-                animation: fadeOut 1s forwards;
-            }
-            @keyframes fadeOut {
-                0% { opacity: 1; transform: translateY(0); }
-                100% { opacity: 0; transform: translateY(-20px); height: 0; margin-bottom: 0; padding: 0; overflow: hidden; }
-            }
+        .content-auto {
+            content-visibility: auto;
         }
-    </style>
+        .symbol-card {
+            @apply bg-white rounded-lg shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer border border-gray-100;
+        }
+        .symbol-display {
+            @apply text-2xl md:text-3xl my-2 flex justify-center items-center;
+            height: 1.5em;
+        }
+        /* 让SVG居中且不撑满宽度 */
+        .symbol-display svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+        .category-btn {
+            @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-md;
+        }
+        .category-btn-active {
+            @apply bg-primary text-white;
+        }
+        .category-btn-inactive {
+            @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+        }
+        .fade-out {
+            animation: fadeOut 1s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); height: 0; margin-bottom: 0; padding: 0; overflow: hidden; }
+        }
+        /* 悬浮球悬停颜色变化 */
+        .float-ball-hover {
+            transition-property: background-color;
+            transition-duration: 200ms;
+            background-color: #2563eb !important; /* Tailwind blue-600 */
+        }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen font-sans text-dark">
@@ -170,11 +183,11 @@
 
   <!-- 悬浮小球及悬浮框 -->
   <div id="float-ball"
-    class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-all duration-200">
+    class="fixed bottom-20 right-8 z-50 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200">
     <i class="fa fa-pencil text-white text-2xl"></i>
   </div>
   <div id="float-panel"
-    class="fixed bottom-28 right-8 z-50 w-96 max-w-[95vw] bg-white rounded-xl shadow-2xl p-5 flex flex-col gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95"
+    class="fixed bottom-40 right-8 z-50 w-96 max-w-[95vw] bg-white rounded-xl shadow-2xl p-5 flex flex-col gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95"
     style="min-width:260px;">
     <!-- 关闭按钮 -->
     <button id="float-close" class="absolute top-2 right-2 text-gray-400 hover:text-primary text-xl"><i
@@ -189,7 +202,8 @@
     <!-- 输出区 -->
     <div>
       <label class="block text-sm text-gray-500 mb-1">渲染效果：</label>
-      <div id="float-output" class="min-h-[40px] bg-gray-50 rounded p-2 text-center"></div>
+      <div id="float-output" class="min-h-[40px] bg-gray-50 rounded p-2 text-center  flex justify-center  items-center">
+      </div>
     </div>
     <!-- 复制按钮 -->
     <button id="download-svg-btn"
@@ -574,66 +588,120 @@
       const floatClose = document.getElementById('float-close');
       const floatInput = document.getElementById('float-input');
       const floatOutput = document.getElementById('float-output');
-      // 修改按钮ID
       const downloadSvgBtn = document.getElementById('download-svg-btn');
 
       // 拖动相关变量
       let isDragging = false;
       let dragOffsetX = 0, dragOffsetY = 0;
       let dragMoved = false;
+      let dragTarget = null; // 新增：拖动目标
+      let panelOffsetX = 0, panelOffsetY = -120;
 
-      // 允许拖动
+      // 悬浮球拖动
       floatBall.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         isDragging = true;
         dragMoved = false;
-        const rect = floatBall.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        floatBall.style.left = rect.left + 'px';
-        floatBall.style.top = rect.top + 'px';
+        dragTarget = 'ball';
+        const ballRect = floatBall.getBoundingClientRect();
+        dragOffsetX = e.clientX - ballRect.left;
+        dragOffsetY = e.clientY - ballRect.top;
+        panelOffsetX = floatPanel.getBoundingClientRect().left - ballRect.left;
+        panelOffsetY = floatPanel.getBoundingClientRect().top - ballRect.top;
+        floatBall.style.left = ballRect.left + 'px';
+        floatBall.style.top = ballRect.top + 'px';
         floatBall.style.right = 'auto';
         floatBall.style.bottom = 'auto';
         floatBall.style.transition = 'none';
+        floatPanel.style.transition = 'none';
         document.body.style.userSelect = 'none';
       });
+
+      // 悬浮框拖动（你可以让整个floatPanel可拖动，或加一个专门的拖动条）
+      floatPanel.addEventListener('mousedown', (e) => {
+        // 只允许左键且不是点关闭按钮
+        if (e.button !== 0 || e.target === floatClose) return;
+        isDragging = true;
+        dragMoved = false;
+        dragTarget = 'panel';
+        const panelRect = floatPanel.getBoundingClientRect();
+        dragOffsetX = e.clientX - panelRect.left;
+        dragOffsetY = e.clientY - panelRect.top;
+        // 计算悬浮球与悬浮窗的偏移
+        panelOffsetX = panelRect.left - floatBall.getBoundingClientRect().left;
+        panelOffsetY = panelRect.top - floatBall.getBoundingClientRect().top;
+        floatBall.style.transition = 'none';
+        floatPanel.style.transition = 'none';
+        document.body.style.userSelect = 'none';
+      });
+
       document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         dragMoved = true;
         const winW = window.innerWidth, winH = window.innerHeight;
         const ballW = floatBall.offsetWidth, ballH = floatBall.offsetHeight;
+        const panelW = floatPanel.offsetWidth, panelH = floatPanel.offsetHeight;
         let left = e.clientX - dragOffsetX;
         let top = e.clientY - dragOffsetY;
+
+        // 限制拖动范围
         left = Math.max(0, Math.min(winW - ballW, left));
         top = Math.max(0, Math.min(winH - ballH, top));
-        floatBall.style.left = left + 'px';
-        floatBall.style.top = top + 'px';
+
+        if (dragTarget === 'ball') {
+          floatBall.style.left = left + 'px';
+          floatBall.style.top = top + 'px';
+          floatPanel.style.left = (left + panelOffsetX) + 'px';
+          floatPanel.style.top = (top + panelOffsetY) + 'px';
+          floatPanel.style.right = 'auto';
+          floatPanel.style.bottom = 'auto';
+        } else if (dragTarget === 'panel') {
+          floatPanel.style.left = left + 'px';
+          floatPanel.style.top = top + 'px';
+          floatPanel.style.right = 'auto';
+          floatPanel.style.bottom = 'auto';
+          // 悬浮球跟随移动
+          floatBall.style.left = (left - panelOffsetX) + 'px';
+          floatBall.style.top = (top - panelOffsetY) + 'px';
+          floatBall.style.right = 'auto';
+          floatBall.style.bottom = 'auto';
+        }
       });
+
       document.addEventListener('mouseup', () => {
         if (isDragging) {
           isDragging = false;
           setTimeout(() => { dragMoved = false; }, 0);
           floatBall.style.transition = '';
+          floatPanel.style.transition = '';
           document.body.style.userSelect = '';
+          dragTarget = null;
         }
       });
 
-      // 展开悬浮框
+      // 展开/关闭悬浮框（单击悬浮球切换显示/隐藏）
       floatBall.addEventListener('click', (e) => {
-        // 拖动时或刚拖动后不弹出
         if (isDragging || dragMoved) return;
-        floatPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-        floatPanel.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
-        setTimeout(() => floatInput.focus(), 200);
+        // 判断当前悬浮窗是否显示
+        const isPanelOpen = floatPanel.classList.contains('opacity-100');
+        if (isPanelOpen) {
+          // 关闭悬浮窗
+          floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+          floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+        } else {
+          // 打开悬浮窗，位置跟随悬浮球
+          const ballRect = floatBall.getBoundingClientRect();
+          floatPanel.style.left = (ballRect.left + panelOffsetX) + 'px';
+          floatPanel.style.top = (ballRect.top + panelOffsetY) + 'px';
+          floatPanel.style.right = 'auto';
+          floatPanel.style.bottom = 'auto';
+          floatPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+          floatPanel.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+          setTimeout(() => floatInput.focus(), 200);
+        }
       });
 
-      // 双击悬浮小球关闭输入框（不清空内容）
-      floatBall.addEventListener('dblclick', (e) => {
-        floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-        floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-      });
-
-      // 关闭悬浮框
+      // 关闭悬浮框按钮（保留）
       floatClose.addEventListener('click', () => {
         floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
         floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
@@ -681,6 +749,15 @@
         URL.revokeObjectURL(url);
       });
     })();
+
+    // 悬浮小球悬停颜色变化
+    const floatBall = document.getElementById('float-ball');
+    floatBall.addEventListener('mouseenter', () => {
+      floatBall.classList.add('float-ball-hover');
+    });
+    floatBall.addEventListener('mouseleave', () => {
+      floatBall.classList.remove('float-ball-hover');
+    });
   </script>
 </body>
 
