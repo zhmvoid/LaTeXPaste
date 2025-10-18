@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaTeX公式代码复制器</title>
-    <!-- 引入Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 引入MathJax用于渲染LaTeX公式 -->
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <!-- Tailwind配置 -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981',
-                        accent: '#8B5CF6',
-                        dark: '#1E293B',
-                        light: '#F8FAFC'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaTeX公式代码复制器</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 引入MathJax用于渲染LaTeX公式 -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            accent: '#8B5CF6',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
         }
-    </script>
-    
-    <!-- 自定义工具类 -->
-    <style type="text/tailwindcss">
-        @layer utilities {
+      }
+    }
+  </script>
+
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
             .content-auto {
                 content-visibility: auto;
             }
@@ -62,621 +63,625 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen font-sans text-dark">
-    <!-- 顶部导航栏 -->
-    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <!-- 标题部分 -->
-                <div class="flex items-center mb-3 md:mb-0">
-                    <i class="fa fa-calculator text-primary text-2xl mr-3"></i>
-                    <h1 class="text-xl md:text-2xl font-bold text-dark">LaTeX公式代码复制器</h1>
-                </div>
-                
-                <!-- 搜索框和联系方式组合 -->
-                <div class="flex flex-col sm:flex-row items-center w-full md:w-auto gap-3">
-                    <!-- 搜索框 -->
-                    <div class="relative w-full sm:w-72 md:w-80">
-                        <input 
-                            type="text" 
-                            id="search-input" 
-                            placeholder="搜索LaTeX符号或代码..." 
-                            class="w-full px-4 py-2 pl-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        >
-                        <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    
-                    <!-- 联系方式 - 放大图标 -->
-                    <div class="flex space-x-5">
-                        <a href="https://github.com/zhmvoid/LaTeXPaste" target="_blank" rel="noopener noreferrer" 
-                           class="text-gray-600 hover:text-primary transition-colors" 
-                           title="GitHub">
-                            <i class="fa fa-github text-2xl"></i>
-                        </a>
-                        <a href="mailto:hengmao.zh@foxmail.com" 
-                           class="text-gray-600 hover:text-primary transition-colors" 
-                           title="邮箱">
-                            <i class="fa fa-envelope text-2xl"></i>
-                        </a>
-                        <a href="https://github.com/zhmvoid/LaTeXPaste/blob/main/help.md" target="_blank" 
-                           class="text-gray-600 hover:text-primary transition-colors" 
-                           title="帮助">
-                            <i class="fa fa-question-circle text-2xl"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <!-- 标题部分 -->
+        <div class="flex items-center mb-3 md:mb-0">
+          <i class="fa fa-calculator text-primary text-2xl mr-3"></i>
+          <h1 class="text-xl md:text-2xl font-bold text-dark">LaTeX公式代码复制器</h1>
         </div>
-    </header>
 
-    <!-- 主内容区 -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- 介绍部分 - 设置为自动消失 -->
-        <div id="usage-guide" class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-8 shadow-sm transition-all duration-500">
-            <h2 class="text-xl font-semibold mb-3 flex items-center">
-                <i class="fa fa-info-circle text-primary mr-2"></i>使用说明
-            </h2>
-            <p class="text-gray-700 mb-2">点击任意符号卡片即可复制其LaTeX代码到剪贴板，方便在论文、报告中使用。</p>
-            <p class="text-gray-700">可通过上方搜索框查找符号，或点击下方分类快速筛选。</p>
+        <!-- 搜索框和联系方式组合 -->
+        <div class="flex flex-col sm:flex-row items-center w-full md:w-auto gap-3">
+          <!-- 搜索框 -->
+          <div class="relative w-full sm:w-72 md:w-80">
+            <input type="text" id="search-input" placeholder="搜索LaTeX符号或代码..."
+              class="w-full px-4 py-2 pl-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+            <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+
+          <!-- 联系方式 - 放大图标 -->
+          <div class="flex space-x-5">
+            <a href="https://github.com/zhmvoid/LaTeXPaste" target="_blank" rel="noopener noreferrer"
+              class="text-gray-600 hover:text-primary transition-colors" title="GitHub">
+              <i class="fa fa-github text-2xl"></i>
+            </a>
+            <a href="mailto:hengmao.zh@foxmail.com" class="text-gray-600 hover:text-primary transition-colors"
+              title="邮箱">
+              <i class="fa fa-envelope text-2xl"></i>
+            </a>
+            <a href="https://github.com/zhmvoid/LaTeXPaste/blob/main/help.md" target="_blank"
+              class="text-gray-600 hover:text-primary transition-colors" title="帮助">
+              <i class="fa fa-question-circle text-2xl"></i>
+            </a>
+          </div>
         </div>
-        
-        <!-- 分类标签 -->
-        <div class="mb-8 overflow-x-auto pb-2 scrollbar-hide">
-            <div class="flex space-x-2 min-w-max">
-                <button class="category-btn category-btn-active" data-category="all">全部符号</button>
-                <button class="category-btn category-btn-inactive" data-category="greek">希腊字母</button>
-                <button class="category-btn category-btn-inactive" data-category="arithmetic">算术运算</button>
-                <button class="category-btn category-btn-inactive" data-category="relation">关系符号</button>
-                <button class="category-btn category-btn-inactive" data-category="arrow">箭头符号</button>
-                <button class="category-btn category-btn-inactive" data-category="delimiter">分隔符</button>
-                <button class="category-btn category-btn-inactive" data-category="operator">算子</button>
-                <button class="category-btn category-btn-inactive" data-category="set">集合符号</button>
-                <button class="category-btn category-btn-inactive" data-category="logic">逻辑符号</button>
-                <button class="category-btn category-btn-inactive" data-category="other">其他符号</button>
-            </div>
-        </div>
-        
-        <!-- 符号网格 -->
-        <div id="symbols-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            <!-- 符号卡片将通过JavaScript动态生成 -->
-        </div>
-        
-        <!-- 加载提示 -->
-        <div id="loading" class="flex justify-center items-center py-16">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
-        
-        <!-- 无结果提示 -->
-        <div id="no-results" class="hidden justify-center items-center py-16 text-center">
-            <i class="fa fa-search text-4xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500">未找到匹配的符号，请尝试其他搜索词或分类</p>
-        </div>
-    </main>
-    
-    <!-- 底部信息 -->
-    <footer class="bg-dark text-white py-8 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <p class="text-gray-400">© 2025 LaTeX公式代码复制器</p>
-                    <p class="text-gray-500 text-sm mt-1">一个便捷的LaTeX符号查询与复制工具</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-    
-    <!-- 复制成功提示 -->
-    <div id="copy-toast" class="fixed bottom-6 right-6 bg-secondary text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
-        <i class="fa fa-check-circle mr-2"></i>
-        <span>已复制到剪贴板！</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 介绍部分 - 设置为自动消失 -->
+    <div id="usage-guide"
+      class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-8 shadow-sm transition-all duration-500">
+      <h2 class="text-xl font-semibold mb-3 flex items-center">
+        <i class="fa fa-info-circle text-primary mr-2"></i>使用说明
+      </h2>
+      <p class="text-gray-700 mb-2">点击任意符号卡片即可复制其LaTeX代码到剪贴板，方便在论文、报告中使用。</p>
+      <p class="text-gray-700">可通过上方搜索框查找符号，或点击下方分类快速筛选。</p>
     </div>
 
-    <!-- 悬浮小球及悬浮框 -->
-    <div id="float-ball" class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-all duration-200">
-        <i class="fa fa-pencil text-white text-2xl"></i>
-    </div>
-    <div id="float-panel" class="fixed bottom-28 right-8 z-50 w-96 max-w-[95vw] bg-white rounded-xl shadow-2xl p-5 flex flex-col gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95" style="min-width:260px;">
-        <!-- 关闭按钮 -->
-        <button id="float-close" class="absolute top-2 right-2 text-gray-400 hover:text-primary text-xl"><i class="fa fa-times"></i></button>
-        <!-- 输入区 -->
-        <div>
-            <label class="block text-sm text-gray-500 mb-1">输入LaTeX公式：</label>
-            <textarea id="float-input" rows="3" class="w-full border border-gray-200 rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary/30 font-mono text-base resize-none" placeholder="输入LaTeX代码，如 x^2 + y^2 = z^2"></textarea>
-        </div>
-        <!-- 输出区 -->
-        <div>
-            <label class="block text-sm text-gray-500 mb-1">渲染效果：</label>
-            <div id="float-output" class="min-h-[40px] bg-gray-50 rounded p-2 text-center"></div>
-        </div>
-        <!-- 复制按钮 -->
-        <button id="copy-svg-btn" class="mt-2 bg-secondary hover:bg-green-600 text-white font-semibold py-2 rounded transition-all flex items-center justify-center gap-2">
-            <i class="fa fa-copy"></i> 复制为svg图像
-        </button>
+    <!-- 分类标签 -->
+    <div class="mb-8 overflow-x-auto pb-2 scrollbar-hide">
+      <div class="flex space-x-2 min-w-max">
+        <button class="category-btn category-btn-inactive" data-category="all">全部符号</button>
+        <button class="category-btn category-btn-active" data-category="greek">希腊字母</button>
+        <button class="category-btn category-btn-inactive" data-category="arithmetic">算术运算</button>
+        <button class="category-btn category-btn-inactive" data-category="relation">关系符号</button>
+        <button class="category-btn category-btn-inactive" data-category="arrow">箭头符号</button>
+        <button class="category-btn category-btn-inactive" data-category="delimiter">分隔符</button>
+        <button class="category-btn category-btn-inactive" data-category="operator">算子</button>
+        <button class="category-btn category-btn-inactive" data-category="set">集合符号</button>
+        <button class="category-btn category-btn-inactive" data-category="logic">逻辑符号</button>
+        <button class="category-btn category-btn-inactive" data-category="other">其他符号</button>
+      </div>
     </div>
 
-    <script>
-        // 页面加载完成后，让使用说明1秒后自动消失
-        document.addEventListener('DOMContentLoaded', () => {
-            const usageGuide = document.getElementById('usage-guide');
-            
-            // 1秒后开始淡出动画
-            setTimeout(() => {
-                usageGuide.classList.add('fade-out');
-                
-                // 动画结束后完全隐藏
-                setTimeout(() => {
-                    usageGuide.style.display = 'none';
-                }, 2000);
-            }, 2000);0
-            
-            // 初始化其他功能
-            initSymbols();
+    <!-- 符号网格 -->
+    <div id="symbols-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <!-- 符号卡片将通过JavaScript动态生成 -->
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading" class="flex justify-center items-center py-16">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- 无结果提示 -->
+    <div id="no-results" class="hidden justify-center items-center py-16 text-center">
+      <i class="fa fa-search text-4xl text-gray-300 mb-4"></i>
+      <p class="text-gray-500">未找到匹配的符号，请尝试其他搜索词或分类</p>
+    </div>
+  </main>
+
+  <!-- 底部信息 -->
+  <footer class="bg-dark text-white py-8 mt-12">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <p class="text-gray-400">© 2025 LaTeX公式代码复制器</p>
+          <p class="text-gray-500 text-sm mt-1">一个便捷的LaTeX符号查询与复制工具</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 复制成功提示 -->
+  <div id="copy-toast"
+    class="fixed bottom-6 right-6 bg-secondary text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+    <i class="fa fa-check-circle mr-2"></i>
+    <span>已复制到剪贴板！</span>
+  </div>
+
+  <!-- 悬浮小球及悬浮框 -->
+  <div id="float-ball"
+    class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-all duration-200">
+    <i class="fa fa-pencil text-white text-2xl"></i>
+  </div>
+  <div id="float-panel"
+    class="fixed bottom-28 right-8 z-50 w-96 max-w-[95vw] bg-white rounded-xl shadow-2xl p-5 flex flex-col gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95"
+    style="min-width:260px;">
+    <!-- 关闭按钮 -->
+    <button id="float-close" class="absolute top-2 right-2 text-gray-400 hover:text-primary text-xl"><i
+        class="fa fa-times"></i></button>
+    <!-- 输入区 -->
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">输入LaTeX公式：</label>
+      <textarea id="float-input" rows="3"
+        class="w-full border border-gray-200 rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary/30 font-mono text-base resize-none"
+        placeholder="输入LaTeX代码，如 x^2 + y^2 = z^2"></textarea>
+    </div>
+    <!-- 输出区 -->
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">渲染效果：</label>
+      <div id="float-output" class="min-h-[40px] bg-gray-50 rounded p-2 text-center"></div>
+    </div>
+    <!-- 复制按钮 -->
+    <button id="download-svg-btn"
+      class="mt-2 bg-secondary hover:bg-green-600 text-white font-semibold py-2 rounded transition-all flex items-center justify-center gap-2">
+      <i class="fa fa-download"></i> 下载SVG图像
+    </button>
+  </div>
+
+  <script>
+    // 页面加载完成后，让使用说明1秒后自动消失
+    document.addEventListener('DOMContentLoaded', () => {
+      const usageGuide = document.getElementById('usage-guide');
+
+      // 1秒后开始淡出动画
+      setTimeout(() => {
+        usageGuide.classList.add('fade-out');
+
+        // 动画结束后完全隐藏
+        setTimeout(() => {
+          usageGuide.style.display = 'none';
+        }, 2000);
+      }, 2000); 0
+
+      // 初始化其他功能
+      initSymbols();
+    });
+
+    // LaTeX符号数据库
+    const latexSymbols = [
+      // 希腊字母
+      { symbol: '\\alpha', display: 'α', category: 'greek', name: '阿尔法' },
+      { symbol: '\\beta', display: 'β', category: 'greek', name: '贝塔' },
+      { symbol: '\\gamma', display: 'γ', category: 'greek', name: '伽马' },
+      { symbol: '\\delta', display: 'δ', category: 'greek', name: '德尔塔' },
+      { symbol: '\\epsilon', display: 'ε', category: 'greek', name: '伊普西龙' },
+      { symbol: '\\zeta', display: 'ζ', category: 'greek', name: '泽塔' },
+      { symbol: '\\eta', display: 'η', category: 'greek', name: '伊塔' },
+      { symbol: '\\theta', display: 'θ', category: 'greek', name: '西塔' },
+      { symbol: '\\iota', display: 'ι', category: 'greek', name: '约塔' },
+      { symbol: '\\kappa', display: 'κ', category: 'greek', name: '卡帕' },
+      { symbol: '\\lambda', display: 'λ', category: 'greek', name: '兰姆达' },
+      { symbol: '\\mu', display: 'μ', category: 'greek', name: '缪' },
+      { symbol: '\\nu', display: 'ν', category: 'greek', name: '纽' },
+      { symbol: '\\xi', display: 'ξ', category: 'greek', name: '克西' },
+      { symbol: '\\pi', display: 'π', category: 'greek', name: '派' },
+      { symbol: '\\rho', display: 'ρ', category: 'greek', name: '柔' },
+      { symbol: '\\sigma', display: 'σ', category: 'greek', name: '西格玛' },
+      { symbol: '\\tau', display: 'τ', category: 'greek', name: '陶' },
+      { symbol: '\\upsilon', display: 'υ', category: 'greek', name: '宇普西龙' },
+      { symbol: '\\phi', display: 'φ', category: 'greek', name: '斐' },
+      { symbol: '\\chi', display: 'χ', category: 'greek', name: '希' },
+      { symbol: '\\psi', display: 'ψ', category: 'greek', name: '普西' },
+      { symbol: '\\omega', display: 'ω', category: 'greek', name: '欧米伽' },
+      { symbol: '\\Gamma', display: 'Γ', category: 'greek', name: '大写伽马' },
+      { symbol: '\\Delta', display: 'Δ', category: 'greek', name: '大写德尔塔' },
+      { symbol: '\\Theta', display: 'Θ', category: 'greek', name: '大写西塔' },
+      { symbol: '\\Lambda', display: 'Λ', category: 'greek', name: '大写兰姆达' },
+      { symbol: '\\Xi', display: 'Ξ', category: 'greek', name: '大写克西' },
+      { symbol: '\\Pi', display: 'Π', category: 'greek', name: '大写派' },
+      { symbol: '\\Sigma', display: 'Σ', category: 'greek', name: '大写西格玛' },
+      { symbol: '\\Upsilon', display: 'Υ', category: 'greek', name: '大写宇普西龙' },
+      { symbol: '\\Phi', display: 'Φ', category: 'greek', name: '大写斐' },
+      { symbol: '\\Psi', display: 'Ψ', category: 'greek', name: '大写普西' },
+      { symbol: '\\Omega', display: 'Ω', category: 'greek', name: '大写欧米伽' },
+
+      // 算术运算
+      { symbol: '+', display: '+', category: 'arithmetic', name: '加号' },
+      { symbol: '-', display: '-', category: 'arithmetic', name: '减号' },
+      { symbol: '\\times', display: '×', category: 'arithmetic', name: '乘号' },
+      { symbol: '\\div', display: '÷', category: 'arithmetic', name: '除号' },
+      { symbol: '\\pm', display: '±', category: 'arithmetic', name: '正负号' },
+      { symbol: '\\mp', display: '∓', category: 'arithmetic', name: '负正号' },
+      { symbol: '\\cdot', display: '·', category: 'arithmetic', name: '点乘' },
+      { symbol: '\\ast', display: '∗', category: 'arithmetic', name: '星号' },
+      { symbol: '\\circ', display: '∘', category: 'arithmetic', name: '环' },
+      { symbol: '\\oplus', display: '⊕', category: 'arithmetic', name: '异或' },
+      { symbol: '\\otimes', display: '⊗', category: 'arithmetic', name: '张量积' },
+      { symbol: '\\odot', display: '⊙', category: 'arithmetic', name: '点积' },
+      { symbol: '\\bmod', display: 'mod', category: 'arithmetic', name: '模运算' },
+      { symbol: '\\%', display: '%', category: 'arithmetic', name: '百分号' },
+      { symbol: '\\displaystyle\\sum', display: '∑', category: 'arithmetic', name: '求和' },
+      { symbol: '\\displaystyle\\prod', display: '∏', category: 'arithmetic', name: '乘积' },
+      { symbol: '\\displaystyle\\coprod', display: '∐', category: 'arithmetic', name: '余积' },
+
+      // 关系符号
+      { symbol: '=', display: '=', category: 'relation', name: '等于' },
+      { symbol: '\\neq', display: '≠', category: 'relation', name: '不等于' },
+      { symbol: '\\approx', display: '≈', category: 'relation', name: '约等于' },
+      { symbol: '\\sim', display: '∼', category: 'relation', name: '相似' },
+      { symbol: '\\cong', display: '≅', category: 'relation', name: '全等' },
+      { symbol: '\\equiv', display: '≡', category: 'relation', name: '恒等于' },
+      { symbol: '<', display: '<', category: 'relation', name: '小于' },
+      { symbol: '>', display: '>', category: 'relation', name: '大于' },
+      { symbol: '\\leq', display: '≤', category: 'relation', name: '小于等于' },
+      { symbol: '\\geq', display: '≥', category: 'relation', name: '大于等于' },
+      { symbol: '\\ll', display: '≪', category: 'relation', name: '远小于' },
+      { symbol: '\\gg', display: '≫', category: 'relation', name: '远大于' },
+      { symbol: '\\subset', display: '⊂', category: 'relation', name: '子集' },
+      { symbol: '\\supset', display: '⊃', category: 'relation', name: '超集' },
+      { symbol: '\\subseteq', display: '⊆', category: 'relation', name: '子集或等于' },
+      { symbol: '\\supseteq', display: '⊇', category: 'relation', name: '超集或等于' },
+      { symbol: '\\in', display: '∈', category: 'relation', name: '属于' },
+      { symbol: '\\notin', display: '∉', category: 'relation', name: '不属于' },
+      { symbol: '\\ni', display: '∋', category: 'relation', name: '包含' },
+
+      // 箭头符号
+      { symbol: '\\to', display: '→', category: 'arrow', name: '右箭头' },
+      { symbol: '\\leftarrow', display: '←', category: 'arrow', name: '左箭头' },
+      { symbol: '\\Rightarrow', display: '⇒', category: 'arrow', name: '右双箭头' },
+      { symbol: '\\Leftarrow', display: '⇐', category: 'arrow', name: '左双箭头' },
+      { symbol: '\\leftrightarrow', display: '↔', category: 'arrow', name: '左右箭头' },
+      { symbol: '\\Leftrightarrow', display: '⇔', category: 'arrow', name: '左右双箭头' },
+      { symbol: '\\mapsto', display: '↦', category: 'arrow', name: '映射箭头' },
+      { symbol: '\\uparrow', display: '↑', category: 'arrow', name: '上箭头' },
+      { symbol: '\\downarrow', display: '↓', category: 'arrow', name: '下箭头' },
+      { symbol: '\\Uparrow', display: '⇧', category: 'arrow', name: '上双箭头' },
+      { symbol: '\\Downarrow', display: '⇩', category: 'arrow', name: '下双箭头' },
+      { symbol: '\\nearrow', display: '↗', category: 'arrow', name: '右上箭头' },
+      { symbol: '\\searrow', display: '↘', category: 'arrow', name: '右下箭头' },
+      { symbol: '\\swarrow', display: '↙', category: 'arrow', name: '左下箭头' },
+      { symbol: '\\nwarrow', display: '↖', category: 'arrow', name: '左上箭头' },
+
+      // 分隔符
+      { symbol: '(', display: '(', category: 'delimiter', name: '左括号' },
+      { symbol: ')', display: ')', category: 'delimiter', name: '右括号' },
+      { symbol: '[', display: '[', category: 'delimiter', name: '左方括号' },
+      { symbol: ']', display: ']', category: 'delimiter', name: '右方括号' },
+      { symbol: '\\{', display: '{', category: 'delimiter', name: '左花括号' },
+      { symbol: '\\}', display: '}', category: 'delimiter', name: '右花括号' },
+      { symbol: '\\langle', display: '⟨', category: 'delimiter', name: '左角括号' },
+      { symbol: '\\rangle', display: '⟩', category: 'delimiter', name: '右角括号' },
+      { symbol: '|', display: '|', category: 'delimiter', name: '竖线' },
+      { symbol: '\\|', display: '∥', category: 'delimiter', name: '双竖线' },
+      { symbol: '\\lceil', display: '⌈', category: 'delimiter', name: '左上限' },
+      { symbol: '\\rceil', display: '⌉', category: 'delimiter', name: '右上限' },
+      { symbol: '\\lfloor', display: '⌊', category: 'delimiter', name: '左下限' },
+      { symbol: '\\rfloor', display: '⌋', category: 'delimiter', name: '右下限' },
+      { symbol: '/', display: '/', category: 'delimiter', name: '斜杠' },
+      { symbol: '\\backslash', display: '\\', category: 'delimiter', name: '反斜杠' },
+
+      // 算子
+      { symbol: '\\sin', display: 'sin', category: 'operator', name: '正弦' },
+      { symbol: '\\cos', display: 'cos', category: 'operator', name: '余弦' },
+      { symbol: '\\tan', display: 'tan', category: 'operator', name: '正切' },
+      { symbol: '\\cot', display: 'cot', category: 'operator', name: '余切' },
+      { symbol: '\\sec', display: 'sec', category: 'operator', name: '正割' },
+      { symbol: '\\csc', display: 'csc', category: 'operator', name: '余割' },
+      { symbol: '\\log', display: 'log', category: 'operator', name: '对数' },
+      { symbol: '\\ln', display: 'ln', category: 'operator', name: '自然对数' },
+      { symbol: '\\exp', display: 'exp', category: 'operator', name: '指数' },
+      { symbol: '\\lim', display: 'lim', category: 'operator', name: '极限' },
+      { symbol: '\\inf', display: 'inf', category: 'operator', name: '下确界' },
+      { symbol: '\\sup', display: 'sup', category: 'operator', name: '上确界' },
+      { symbol: '\\max', display: 'max', category: 'operator', name: '最大值' },
+      { symbol: '\\min', display: 'min', category: 'operator', name: '最小值' },
+      { symbol: '\\gcd', display: 'gcd', category: 'operator', name: '最大公约数' },
+      { symbol: '\\lcm', display: 'lcm', category: 'operator', name: '最小公倍数' },
+      { symbol: '\\det', display: 'det', category: 'operator', name: '行列式' },
+      { symbol: '\\dim', display: 'dim', category: 'operator', name: '维数' },
+      { symbol: '\\nabla', display: '∇', category: 'operator', name: 'nabla算子' },
+      { symbol: '\\partial', display: '∂', category: 'operator', name: '偏导数' },
+      { symbol: '\\int', display: '∫', category: 'operator', name: '积分' },
+      { symbol: '\\iint', display: '∬', category: 'operator', name: '二重积分' },
+      { symbol: '\\iiint', display: '∭', category: 'operator', name: '三重积分' },
+      { symbol: '\\oint', display: '∮', category: 'operator', name: '曲线积分' },
+
+      // 集合符号
+      { symbol: '\\emptyset', display: '∅', category: 'set', name: '空集' },
+      { symbol: '\\{\\}', display: '{}', category: 'set', name: '集合' },
+      { symbol: '\\mathbb{N}', display: 'ℕ', category: 'set', name: '自然数集' },
+      { symbol: '\\mathbb{Z}', display: 'ℤ', category: 'set', name: '整数集' },
+      { symbol: '\\mathbb{Q}', display: 'ℚ', category: 'set', name: '有理数集' },
+      { symbol: '\\mathbb{R}', display: 'ℝ', category: 'set', name: '实数集' },
+      { symbol: '\\mathbb{C}', display: 'ℂ', category: 'set', name: '复数集' },
+      { symbol: '\\cup', display: '∪', category: 'set', name: '并集' },
+      { symbol: '\\cap', display: '∩', category: 'set', name: '交集' },
+      { symbol: '\\setminus', display: '∖', category: 'set', name: '差集' },
+      { symbol: '\\complement', display: '∁', category: 'set', name: '补集' },
+      { symbol: '\\bigcup', display: '⋃', category: 'set', name: '大并集' },
+      { symbol: '\\bigcap', display: '⋂', category: 'set', name: '大交集' },
+
+      // 逻辑符号
+      { symbol: '\\land', display: '∧', category: 'logic', name: '合取' },
+      { symbol: '\\lor', display: '∨', category: 'logic', name: '析取' },
+      { symbol: '\\neg', display: '¬', category: 'logic', name: '否定' },
+      { symbol: '\\forall', display: '∀', category: 'logic', name: '全称量词' },
+      { symbol: '\\exists', display: '∃', category: 'logic', name: '存在量词' },
+      { symbol: '\\exists!', display: '∃!', category: 'logic', name: '唯一存在' },
+      { symbol: '\\implies', display: '⇒', category: 'logic', name: '蕴含' },
+      { symbol: '\\iff', display: '⇔', category: 'logic', name: '等价' },
+
+      // 其他符号
+      { symbol: '\\infty', display: '∞', category: 'other', name: '无穷大' },
+      { symbol: '\\aleph', display: 'ℵ', category: 'other', name: '阿列夫' },
+      { symbol: '\\nabla', display: '∇', category: 'other', name: 'nabla' },
+      { symbol: '\\partial', display: '∂', category: 'other', name: '偏微分' },
+      { symbol: '\\degree', display: '°', category: 'other', name: '度' },
+      { symbol: '\\prime', display: '′', category: 'other', name: ' prime符号' },
+      { symbol: '\\emptyset', display: '∅', category: 'other', name: '空集' },
+      { symbol: '\\varnothing', display: '∅', category: 'other', name: '空集' },
+      { symbol: '\\cdots', display: '⋯', category: 'other', name: '水平省略号' },
+      { symbol: '\\vdots', display: '⋮', category: 'other', name: '垂直省略号' },
+      { symbol: '\\ddots', display: '⋱', category: 'other', name: '对角线省略号' },
+      { symbol: '\\because', display: '∵', category: 'other', name: '因为' },
+      { symbol: '\\therefore', display: '∴', category: 'other', name: '所以' },
+      { symbol: '\\propto', display: '∝', category: 'other', name: '成正比' },
+      { symbol: '\\surd', display: '√', category: 'other', name: '根号' },
+      { symbol: '\\sqrt{}', display: '√', category: 'other', name: '根号' },
+      { symbol: '\\boxed{}', display: 'boxed', category: 'other', name: '盒子' }
+    ];
+
+    // 初始化符号展示功能
+    function initSymbols() {
+      // DOM元素
+      const symbolsGrid = document.getElementById('symbols-grid');
+      const loadingIndicator = document.getElementById('loading');
+      const noResultsIndicator = document.getElementById('no-results');
+      const searchInput = document.getElementById('search-input');
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      const copyToast = document.getElementById('copy-toast');
+      const header = document.querySelector('header');
+
+      // 当前筛选状态
+      let currentCategory = 'greek';
+      let currentSearchTerm = '';
+
+      // 渲染符号
+      renderSymbols(latexSymbols.filter(s => s.category === 'greek'));
+
+      // 监听分类按钮点击
+      categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // 更新按钮样式
+          categoryButtons.forEach(btn => {
+            btn.classList.remove('category-btn-active');
+            btn.classList.add('category-btn-inactive');
+          });
+          button.classList.remove('category-btn-inactive');
+          button.classList.add('category-btn-active');
+
+          // 更新当前分类并筛选
+          currentCategory = button.dataset.category;
+          filterSymbols();
         });
-        
-        // LaTeX符号数据库
-        const latexSymbols = [
-            // 希腊字母
-            { symbol: '\\alpha', display: 'α', category: 'greek', name: '阿尔法' },
-            { symbol: '\\beta', display: 'β', category: 'greek', name: '贝塔' },
-            { symbol: '\\gamma', display: 'γ', category: 'greek', name: '伽马' },
-            { symbol: '\\delta', display: 'δ', category: 'greek', name: '德尔塔' },
-            { symbol: '\\epsilon', display: 'ε', category: 'greek', name: '伊普西龙' },
-            { symbol: '\\zeta', display: 'ζ', category: 'greek', name: '泽塔' },
-            { symbol: '\\eta', display: 'η', category: 'greek', name: '伊塔' },
-            { symbol: '\\theta', display: 'θ', category: 'greek', name: '西塔' },
-            { symbol: '\\iota', display: 'ι', category: 'greek', name: '约塔' },
-            { symbol: '\\kappa', display: 'κ', category: 'greek', name: '卡帕' },
-            { symbol: '\\lambda', display: 'λ', category: 'greek', name: '兰姆达' },
-            { symbol: '\\mu', display: 'μ', category: 'greek', name: '缪' },
-            { symbol: '\\nu', display: 'ν', category: 'greek', name: '纽' },
-            { symbol: '\\xi', display: 'ξ', category: 'greek', name: '克西' },
-            { symbol: '\\pi', display: 'π', category: 'greek', name: '派' },
-            { symbol: '\\rho', display: 'ρ', category: 'greek', name: '柔' },
-            { symbol: '\\sigma', display: 'σ', category: 'greek', name: '西格玛' },
-            { symbol: '\\tau', display: 'τ', category: 'greek', name: '陶' },
-            { symbol: '\\upsilon', display: 'υ', category: 'greek', name: '宇普西龙' },
-            { symbol: '\\phi', display: 'φ', category: 'greek', name: '斐' },
-            { symbol: '\\chi', display: 'χ', category: 'greek', name: '希' },
-            { symbol: '\\psi', display: 'ψ', category: 'greek', name: '普西' },
-            { symbol: '\\omega', display: 'ω', category: 'greek', name: '欧米伽' },
-            { symbol: '\\Gamma', display: 'Γ', category: 'greek', name: '大写伽马' },
-            { symbol: '\\Delta', display: 'Δ', category: 'greek', name: '大写德尔塔' },
-            { symbol: '\\Theta', display: 'Θ', category: 'greek', name: '大写西塔' },
-            { symbol: '\\Lambda', display: 'Λ', category: 'greek', name: '大写兰姆达' },
-            { symbol: '\\Xi', display: 'Ξ', category: 'greek', name: '大写克西' },
-            { symbol: '\\Pi', display: 'Π', category: 'greek', name: '大写派' },
-            { symbol: '\\Sigma', display: 'Σ', category: 'greek', name: '大写西格玛' },
-            { symbol: '\\Upsilon', display: 'Υ', category: 'greek', name: '大写宇普西龙' },
-            { symbol: '\\Phi', display: 'Φ', category: 'greek', name: '大写斐' },
-            { symbol: '\\Psi', display: 'Ψ', category: 'greek', name: '大写普西' },
-            { symbol: '\\Omega', display: 'Ω', category: 'greek', name: '大写欧米伽' },
-            
-            // 算术运算
-            { symbol: '+', display: '+', category: 'arithmetic', name: '加号' },
-            { symbol: '-', display: '-', category: 'arithmetic', name: '减号' },
-            { symbol: '\\times', display: '×', category: 'arithmetic', name: '乘号' },
-            { symbol: '\\div', display: '÷', category: 'arithmetic', name: '除号' },
-            { symbol: '\\pm', display: '±', category: 'arithmetic', name: '正负号' },
-            { symbol: '\\mp', display: '∓', category: 'arithmetic', name: '负正号' },
-            { symbol: '\\cdot', display: '·', category: 'arithmetic', name: '点乘' },
-            { symbol: '\\ast', display: '∗', category: 'arithmetic', name: '星号' },
-            { symbol: '\\circ', display: '∘', category: 'arithmetic', name: '环' },
-            { symbol: '\\oplus', display: '⊕', category: 'arithmetic', name: '异或' },
-            { symbol: '\\otimes', display: '⊗', category: 'arithmetic', name: '张量积' },
-            { symbol: '\\odot', display: '⊙', category: 'arithmetic', name: '点积' },
-            { symbol: '\\bmod', display: 'mod', category: 'arithmetic', name: '模运算' },
-            { symbol: '\\%', display: '%', category: 'arithmetic', name: '百分号' },
-            { symbol: '\\displaystyle\\sum', display: '∑', category: 'arithmetic', name: '求和' },
-            { symbol: '\\displaystyle\\prod', display: '∏', category: 'arithmetic', name: '乘积' },
-            { symbol: '\\displaystyle\\coprod', display: '∐', category: 'arithmetic', name: '余积' },
-            
-            // 关系符号
-            { symbol: '=', display: '=', category: 'relation', name: '等于' },
-            { symbol: '\\neq', display: '≠', category: 'relation', name: '不等于' },
-            { symbol: '\\approx', display: '≈', category: 'relation', name: '约等于' },
-            { symbol: '\\sim', display: '∼', category: 'relation', name: '相似' },
-            { symbol: '\\cong', display: '≅', category: 'relation', name: '全等' },
-            { symbol: '\\equiv', display: '≡', category: 'relation', name: '恒等于' },
-            { symbol: '<', display: '<', category: 'relation', name: '小于' },
-            { symbol: '>', display: '>', category: 'relation', name: '大于' },
-            { symbol: '\\leq', display: '≤', category: 'relation', name: '小于等于' },
-            { symbol: '\\geq', display: '≥', category: 'relation', name: '大于等于' },
-            { symbol: '\\ll', display: '≪', category: 'relation', name: '远小于' },
-            { symbol: '\\gg', display: '≫', category: 'relation', name: '远大于' },
-            { symbol: '\\subset', display: '⊂', category: 'relation', name: '子集' },
-            { symbol: '\\supset', display: '⊃', category: 'relation', name: '超集' },
-            { symbol: '\\subseteq', display: '⊆', category: 'relation', name: '子集或等于' },
-            { symbol: '\\supseteq', display: '⊇', category: 'relation', name: '超集或等于' },
-            { symbol: '\\in', display: '∈', category: 'relation', name: '属于' },
-            { symbol: '\\notin', display: '∉', category: 'relation', name: '不属于' },
-            { symbol: '\\ni', display: '∋', category: 'relation', name: '包含' },
-            
-            // 箭头符号
-            { symbol: '\\to', display: '→', category: 'arrow', name: '右箭头' },
-            { symbol: '\\leftarrow', display: '←', category: 'arrow', name: '左箭头' },
-            { symbol: '\\Rightarrow', display: '⇒', category: 'arrow', name: '右双箭头' },
-            { symbol: '\\Leftarrow', display: '⇐', category: 'arrow', name: '左双箭头' },
-            { symbol: '\\leftrightarrow', display: '↔', category: 'arrow', name: '左右箭头' },
-            { symbol: '\\Leftrightarrow', display: '⇔', category: 'arrow', name: '左右双箭头' },
-            { symbol: '\\mapsto', display: '↦', category: 'arrow', name: '映射箭头' },
-            { symbol: '\\uparrow', display: '↑', category: 'arrow', name: '上箭头' },
-            { symbol: '\\downarrow', display: '↓', category: 'arrow', name: '下箭头' },
-            { symbol: '\\Uparrow', display: '⇧', category: 'arrow', name: '上双箭头' },
-            { symbol: '\\Downarrow', display: '⇩', category: 'arrow', name: '下双箭头' },
-            { symbol: '\\nearrow', display: '↗', category: 'arrow', name: '右上箭头' },
-            { symbol: '\\searrow', display: '↘', category: 'arrow', name: '右下箭头' },
-            { symbol: '\\swarrow', display: '↙', category: 'arrow', name: '左下箭头' },
-            { symbol: '\\nwarrow', display: '↖', category: 'arrow', name: '左上箭头' },
-            
-            // 分隔符
-            { symbol: '(', display: '(', category: 'delimiter', name: '左括号' },
-            { symbol: ')', display: ')', category: 'delimiter', name: '右括号' },
-            { symbol: '[', display: '[', category: 'delimiter', name: '左方括号' },
-            { symbol: ']', display: ']', category: 'delimiter', name: '右方括号' },
-            { symbol: '\\{', display: '{', category: 'delimiter', name: '左花括号' },
-            { symbol: '\\}', display: '}', category: 'delimiter', name: '右花括号' },
-            { symbol: '\\langle', display: '⟨', category: 'delimiter', name: '左角括号' },
-            { symbol: '\\rangle', display: '⟩', category: 'delimiter', name: '右角括号' },
-            { symbol: '|', display: '|', category: 'delimiter', name: '竖线' },
-            { symbol: '\\|', display: '∥', category: 'delimiter', name: '双竖线' },
-            { symbol: '\\lceil', display: '⌈', category: 'delimiter', name: '左上限' },
-            { symbol: '\\rceil', display: '⌉', category: 'delimiter', name: '右上限' },
-            { symbol: '\\lfloor', display: '⌊', category: 'delimiter', name: '左下限' },
-            { symbol: '\\rfloor', display: '⌋', category: 'delimiter', name: '右下限' },
-            { symbol: '/', display: '/', category: 'delimiter', name: '斜杠' },
-            { symbol: '\\backslash', display: '\\', category: 'delimiter', name: '反斜杠' },
-            
-            // 算子
-            { symbol: '\\sin', display: 'sin', category: 'operator', name: '正弦' },
-            { symbol: '\\cos', display: 'cos', category: 'operator', name: '余弦' },
-            { symbol: '\\tan', display: 'tan', category: 'operator', name: '正切' },
-            { symbol: '\\cot', display: 'cot', category: 'operator', name: '余切' },
-            { symbol: '\\sec', display: 'sec', category: 'operator', name: '正割' },
-            { symbol: '\\csc', display: 'csc', category: 'operator', name: '余割' },
-            { symbol: '\\log', display: 'log', category: 'operator', name: '对数' },
-            { symbol: '\\ln', display: 'ln', category: 'operator', name: '自然对数' },
-            { symbol: '\\exp', display: 'exp', category: 'operator', name: '指数' },
-            { symbol: '\\lim', display: 'lim', category: 'operator', name: '极限' },
-            { symbol: '\\inf', display: 'inf', category: 'operator', name: '下确界' },
-            { symbol: '\\sup', display: 'sup', category: 'operator', name: '上确界' },
-            { symbol: '\\max', display: 'max', category: 'operator', name: '最大值' },
-            { symbol: '\\min', display: 'min', category: 'operator', name: '最小值' },
-            { symbol: '\\gcd', display: 'gcd', category: 'operator', name: '最大公约数' },
-            { symbol: '\\lcm', display: 'lcm', category: 'operator', name: '最小公倍数' },
-            { symbol: '\\det', display: 'det', category: 'operator', name: '行列式' },
-            { symbol: '\\dim', display: 'dim', category: 'operator', name: '维数' },
-            { symbol: '\\nabla', display: '∇', category: 'operator', name: 'nabla算子' },
-            { symbol: '\\partial', display: '∂', category: 'operator', name: '偏导数' },
-            { symbol: '\\int', display: '∫', category: 'operator', name: '积分' },
-            { symbol: '\\iint', display: '∬', category: 'operator', name: '二重积分' },
-            { symbol: '\\iiint', display: '∭', category: 'operator', name: '三重积分' },
-            { symbol: '\\oint', display: '∮', category: 'operator', name: '曲线积分' },
-            
-            // 集合符号
-            { symbol: '\\emptyset', display: '∅', category: 'set', name: '空集' },
-            { symbol: '\\{\\}', display: '{}', category: 'set', name: '集合' },
-            { symbol: '\\mathbb{N}', display: 'ℕ', category: 'set', name: '自然数集' },
-            { symbol: '\\mathbb{Z}', display: 'ℤ', category: 'set', name: '整数集' },
-            { symbol: '\\mathbb{Q}', display: 'ℚ', category: 'set', name: '有理数集' },
-            { symbol: '\\mathbb{R}', display: 'ℝ', category: 'set', name: '实数集' },
-            { symbol: '\\mathbb{C}', display: 'ℂ', category: 'set', name: '复数集' },
-            { symbol: '\\cup', display: '∪', category: 'set', name: '并集' },
-            { symbol: '\\cap', display: '∩', category: 'set', name: '交集' },
-            { symbol: '\\setminus', display: '∖', category: 'set', name: '差集' },
-            { symbol: '\\complement', display: '∁', category: 'set', name: '补集' },
-            { symbol: '\\bigcup', display: '⋃', category: 'set', name: '大并集' },
-            { symbol: '\\bigcap', display: '⋂', category: 'set', name: '大交集' },
-            
-            // 逻辑符号
-            { symbol: '\\land', display: '∧', category: 'logic', name: '合取' },
-            { symbol: '\\lor', display: '∨', category: 'logic', name: '析取' },
-            { symbol: '\\neg', display: '¬', category: 'logic', name: '否定' },
-            { symbol: '\\forall', display: '∀', category: 'logic', name: '全称量词' },
-            { symbol: '\\exists', display: '∃', category: 'logic', name: '存在量词' },
-            { symbol: '\\exists!', display: '∃!', category: 'logic', name: '唯一存在' },
-            { symbol: '\\implies', display: '⇒', category: 'logic', name: '蕴含' },
-            { symbol: '\\iff', display: '⇔', category: 'logic', name: '等价' },
-            
-            // 其他符号
-            { symbol: '\\infty', display: '∞', category: 'other', name: '无穷大' },
-            { symbol: '\\aleph', display: 'ℵ', category: 'other', name: '阿列夫' },
-            { symbol: '\\nabla', display: '∇', category: 'other', name: 'nabla' },
-            { symbol: '\\partial', display: '∂', category: 'other', name: '偏微分' },
-            { symbol: '\\degree', display: '°', category: 'other', name: '度' },
-            { symbol: '\\prime', display: '′', category: 'other', name: ' prime符号' },
-            { symbol: '\\emptyset', display: '∅', category: 'other', name: '空集' },
-            { symbol: '\\varnothing', display: '∅', category: 'other', name: '空集' },
-            { symbol: '\\cdots', display: '⋯', category: 'other', name: '水平省略号' },
-            { symbol: '\\vdots', display: '⋮', category: 'other', name: '垂直省略号' },
-            { symbol: '\\ddots', display: '⋱', category: 'other', name: '对角线省略号' },
-            { symbol: '\\because', display: '∵', category: 'other', name: '因为' },
-            { symbol: '\\therefore', display: '∴', category: 'other', name: '所以' },
-            { symbol: '\\propto', display: '∝', category: 'other', name: '成正比' },
-            { symbol: '\\surd', display: '√', category: 'other', name: '根号' },
-            { symbol: '\\sqrt{}', display: '√', category: 'other', name: '根号' },
-            { symbol: '\\boxed{}', display: 'boxed', category: 'other', name: '盒子' }
-        ];
+      });
 
-        // 初始化符号展示功能
-        function initSymbols() {
-            // DOM元素
-            const symbolsGrid = document.getElementById('symbols-grid');
-            const loadingIndicator = document.getElementById('loading');
-            const noResultsIndicator = document.getElementById('no-results');
-            const searchInput = document.getElementById('search-input');
-            const categoryButtons = document.querySelectorAll('.category-btn');
-            const copyToast = document.getElementById('copy-toast');
-            const header = document.querySelector('header');
-            
-            // 当前筛选状态
-            let currentCategory = 'all';
-            let currentSearchTerm = '';
-            
-            // 渲染符号
-            renderSymbols(latexSymbols);
-            
-            // 监听分类按钮点击
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // 更新按钮样式
-                    categoryButtons.forEach(btn => {
-                        btn.classList.remove('category-btn-active');
-                        btn.classList.add('category-btn-inactive');
-                    });
-                    button.classList.remove('category-btn-inactive');
-                    button.classList.add('category-btn-active');
-                    
-                    // 更新当前分类并筛选
-                    currentCategory = button.dataset.category;
-                    filterSymbols();
-                });
-            });
-            
-            // 监听搜索输入
-            searchInput.addEventListener('input', () => {
-                currentSearchTerm = searchInput.value.toLowerCase().trim();
-                filterSymbols();
-            });
-            
-            // 监听滚动事件，改变导航栏样式
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 10) {
-                    header.classList.add('py-2', 'shadow');
-                    header.classList.remove('py-3', 'shadow-sm');
-                } else {
-                    header.classList.add('py-3', 'shadow-sm');
-                    header.classList.remove('py-2', 'shadow');
-                }
-            });
-            
-            // 筛选符号
-            function filterSymbols() {
-                let filteredSymbols = latexSymbols;
-                
-                // 按分类筛选
-                if (currentCategory !== 'all') {
-                    filteredSymbols = filteredSymbols.filter(symbol => 
-                        symbol.category === currentCategory
-                    );
-                }
-                
-                // 按搜索词筛选
-                if (currentSearchTerm) {
-                    filteredSymbols = filteredSymbols.filter(symbol => 
-                        symbol.symbol.toLowerCase().includes(currentSearchTerm) ||
-                        symbol.name.toLowerCase().includes(currentSearchTerm)
-                    );
-                }
-                
-                // 渲染筛选结果
-                renderSymbols(filteredSymbols);
-            }
-            
-            // 渲染符号网格
-            function renderSymbols(symbols) {
-                // 显示加载状态
-                symbolsGrid.innerHTML = '';
-                loadingIndicator.classList.remove('hidden');
-                noResultsIndicator.classList.add('hidden');
-                
-                // 延迟一点时间，让加载动画可见
-                setTimeout(() => {
-                    if (symbols.length === 0) {
-                        // 没有结果
-                        loadingIndicator.classList.add('hidden');
-                        noResultsIndicator.classList.remove('hidden');
-                        noResultsIndicator.classList.add('flex');
-                        return;
-                    }
-                    
-                    // 创建符号卡片
-                    symbols.forEach(symbol => {
-                        const card = document.createElement('div');
-                        card.className = 'symbol-card';
-                        card.dataset.category = symbol.category;
-                        
-                        // 符号显示区域
-                        const symbolDisplay = document.createElement('div');
-                        symbolDisplay.className = 'symbol-display';
-                        symbolDisplay.innerHTML = `\\(${symbol.symbol}\\)`;
-                        
-                        // 代码显示区域
-                        const codeDisplay = document.createElement('div');
-                        codeDisplay.className = 'text-sm font-mono bg-gray-50 p-2 rounded text-center text-gray-700 break-all';
-                        codeDisplay.textContent = symbol.symbol;
-                        
-                        // 名称显示区域
-                        const nameDisplay = document.createElement('div');
-                        nameDisplay.className = 'text-xs text-gray-500 text-center mt-1';
-                        nameDisplay.textContent = symbol.name;
-                        
-                        // 组装卡片
-                        card.appendChild(symbolDisplay);
-                        card.appendChild(codeDisplay);
-                        card.appendChild(nameDisplay);
-                        
-                        // 添加点击复制功能
-                        card.addEventListener('click', () => {
-                            copyToClipboard(symbol.symbol);
-                            showCopyToast();
-                            // 添加点击动画
-                            card.classList.add('scale-95', 'bg-green-50', 'border-green-200');
-                            setTimeout(() => {
-                                card.classList.remove('scale-95', 'bg-green-50', 'border-green-200');
-                            }, 300);
-                        });
-                        
-                        symbolsGrid.appendChild(card);
-                    });
-                    
-                    // 隐藏加载状态，触发MathJax渲染
-                    loadingIndicator.classList.add('hidden');
-                    if (window.MathJax) {
-                        MathJax.typesetPromise();
-                    }
-                }, 300);
-            }
-            
-            // 复制到剪贴板
-            function copyToClipboard(text) {
-                navigator.clipboard.writeText(text).catch(err => {
-                    console.error('无法复制文本: ', err);
-                    // 备用方法
-                    const textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                });
-            }
-            
-            // 显示复制提示
-            function showCopyToast() {
-                copyToast.classList.remove('translate-y-20', 'opacity-0');
-                copyToast.classList.add('translate-y-0', 'opacity-100');
-                
-                setTimeout(() => {
-                    copyToast.classList.remove('translate-y-0', 'opacity-100');
-                    copyToast.classList.add('translate-y-20', 'opacity-0');
-                }, 2000);
-            }
+      // 监听搜索输入
+      searchInput.addEventListener('input', () => {
+        currentSearchTerm = searchInput.value.toLowerCase().trim();
+        filterSymbols();
+      });
+
+      // 监听滚动事件，改变导航栏样式
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) {
+          header.classList.add('py-2', 'shadow');
+          header.classList.remove('py-3', 'shadow-sm');
+        } else {
+          header.classList.add('py-3', 'shadow-sm');
+          header.classList.remove('py-2', 'shadow');
+        }
+      });
+
+      // 筛选符号
+      function filterSymbols() {
+        let filteredSymbols = latexSymbols;
+
+        // 按分类筛选
+        if (currentCategory !== 'all') {
+          filteredSymbols = filteredSymbols.filter(symbol =>
+            symbol.category === currentCategory
+          );
         }
 
-        // 悬浮小球与悬浮框功能
-        (function() {
-            const floatBall = document.getElementById('float-ball');
-            const floatPanel = document.getElementById('float-panel');
-            const floatClose = document.getElementById('float-close');
-            const floatInput = document.getElementById('float-input');
-            const floatOutput = document.getElementById('float-output');
-            const copySvgBtn = document.getElementById('copy-svg-btn');
+        // 按搜索词筛选
+        if (currentSearchTerm) {
+          filteredSymbols = filteredSymbols.filter(symbol =>
+            symbol.symbol.toLowerCase().includes(currentSearchTerm) ||
+            symbol.name.toLowerCase().includes(currentSearchTerm)
+          );
+        }
 
-            // 拖动相关变量
-            let isDragging = false;
-            let dragOffsetX = 0, dragOffsetY = 0;
-            let dragMoved = false;
+        // 渲染筛选结果
+        renderSymbols(filteredSymbols);
+      }
 
-            // 允许拖动
-            floatBall.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return;
-                isDragging = true;
-                dragMoved = false;
-                const rect = floatBall.getBoundingClientRect();
-                dragOffsetX = e.clientX - rect.left;
-                dragOffsetY = e.clientY - rect.top;
-                floatBall.style.left = rect.left + 'px';
-                floatBall.style.top = rect.top + 'px';
-                floatBall.style.right = 'auto';
-                floatBall.style.bottom = 'auto';
-                floatBall.style.transition = 'none';
-                document.body.style.userSelect = 'none';
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                dragMoved = true;
-                const winW = window.innerWidth, winH = window.innerHeight;
-                const ballW = floatBall.offsetWidth, ballH = floatBall.offsetHeight;
-                let left = e.clientX - dragOffsetX;
-                let top = e.clientY - dragOffsetY;
-                left = Math.max(0, Math.min(winW - ballW, left));
-                top = Math.max(0, Math.min(winH - ballH, top));
-                floatBall.style.left = left + 'px';
-                floatBall.style.top = top + 'px';
-            });
-            document.addEventListener('mouseup', () => {
-                if (isDragging) {
-                    isDragging = false;
-                    setTimeout(() => { dragMoved = false; }, 0);
-                    floatBall.style.transition = '';
-                    document.body.style.userSelect = '';
-                }
-            });
+      // 渲染符号网格
+      function renderSymbols(symbols) {
+        // 显示加载状态
+        symbolsGrid.innerHTML = '';
+        loadingIndicator.classList.remove('hidden');
+        noResultsIndicator.classList.add('hidden');
 
-            // 展开悬浮框
-            floatBall.addEventListener('click', (e) => {
-                // 拖动时或刚拖动后不弹出
-                if (isDragging || dragMoved) return;
-                floatPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-                floatPanel.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
-                setTimeout(() => floatInput.focus(), 200);
-            });
+        // 延迟一点时间，让加载动画可见
+        setTimeout(() => {
+          if (symbols.length === 0) {
+            // 没有结果
+            loadingIndicator.classList.add('hidden');
+            noResultsIndicator.classList.remove('hidden');
+            noResultsIndicator.classList.add('flex');
+            return;
+          }
 
-            // 双击悬浮小球关闭输入框（不清空内容）
-            floatBall.addEventListener('dblclick', (e) => {
-                floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-                floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-            });
+          // 创建符号卡片
+          symbols.forEach(symbol => {
+            const card = document.createElement('div');
+            card.className = 'symbol-card';
+            card.dataset.category = symbol.category;
 
-            // 关闭悬浮框
-            floatClose.addEventListener('click', () => {
-                floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-                floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+            // 符号显示区域
+            const symbolDisplay = document.createElement('div');
+            symbolDisplay.className = 'symbol-display';
+            symbolDisplay.innerHTML = `\\(${symbol.symbol}\\)`;
+
+            // 代码显示区域
+            const codeDisplay = document.createElement('div');
+            codeDisplay.className = 'text-sm font-mono bg-gray-50 p-2 rounded text-center text-gray-700 break-all';
+            codeDisplay.textContent = symbol.symbol;
+
+            // 名称显示区域
+            const nameDisplay = document.createElement('div');
+            nameDisplay.className = 'text-xs text-gray-500 text-center mt-1';
+            nameDisplay.textContent = symbol.name;
+
+            // 组装卡片
+            card.appendChild(symbolDisplay);
+            card.appendChild(codeDisplay);
+            card.appendChild(nameDisplay);
+
+            // 添加点击复制功能
+            card.addEventListener('click', () => {
+              copyToClipboard(symbol.symbol);
+              showCopyToast();
+              // 添加点击动画
+              card.classList.add('scale-95', 'bg-green-50', 'border-green-200');
+              setTimeout(() => {
+                card.classList.remove('scale-95', 'bg-green-50', 'border-green-200');
+              }, 300);
             });
 
-            // 输入时自动渲染
-            floatInput.addEventListener('input', renderFloatTex);
+            symbolsGrid.appendChild(card);
+          });
 
-            function renderFloatTex() {
-                const tex = floatInput.value.trim();
-                if (!tex) {
-                    floatOutput.innerHTML = '';
-                    return;
-                }
-                floatOutput.innerHTML = `\\(${tex}\\)`;
-                if (window.MathJax) MathJax.typesetPromise([floatOutput]);
-            }
+          // 隐藏加载状态，触发MathJax渲染
+          loadingIndicator.classList.add('hidden');
+          if (window.MathJax) {
+            MathJax.typesetPromise();
+          }
+        }, 300);
+      }
 
-            // 复制SVG到剪贴板（等待SVG渲染完成）
-            copySvgBtn.addEventListener('click', async () => {
-                await MathJax.typesetPromise([floatOutput]);
-                let svg = null, tryCount = 0;
-                while (!svg && tryCount < 20) {
-                    svg = floatOutput.querySelector('svg');
-                    if (svg) break;
-                    await new Promise(r => setTimeout(r, 50));
-                    tryCount++;
-                }
-                if (!svg) {
-                    alert('请先输入有效的LaTeX公式');
-                    return;
-                }
-                const serializer = new XMLSerializer();
-                const svgStr = serializer.serializeToString(svg);
-                try {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/svg+xml': new Blob([svgStr], {type: 'image/svg+xml'}) })
-                    ]);
-                } catch (e) {
-                    try {
-                        await navigator.clipboard.writeText(svgStr);
-                        alert('已复制SVG源码到剪贴板');
-                    } catch {
-                        alert('复制失败，请手动复制');
-                    }
-                }
-            });
-        })();
-    </script>
+      // 复制到剪贴板
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).catch(err => {
+          console.error('无法复制文本: ', err);
+          // 备用方法
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        });
+      }
+
+      // 显示复制提示
+      function showCopyToast() {
+        copyToast.classList.remove('translate-y-20', 'opacity-0');
+        copyToast.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+          copyToast.classList.remove('translate-y-0', 'opacity-100');
+          copyToast.classList.add('translate-y-20', 'opacity-0');
+        }, 2000);
+      }
+    }
+
+    // 悬浮小球与悬浮框功能
+    (function () {
+      const floatBall = document.getElementById('float-ball');
+      const floatPanel = document.getElementById('float-panel');
+      const floatClose = document.getElementById('float-close');
+      const floatInput = document.getElementById('float-input');
+      const floatOutput = document.getElementById('float-output');
+      // 修改按钮ID
+      const downloadSvgBtn = document.getElementById('download-svg-btn');
+
+      // 拖动相关变量
+      let isDragging = false;
+      let dragOffsetX = 0, dragOffsetY = 0;
+      let dragMoved = false;
+
+      // 允许拖动
+      floatBall.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isDragging = true;
+        dragMoved = false;
+        const rect = floatBall.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        floatBall.style.left = rect.left + 'px';
+        floatBall.style.top = rect.top + 'px';
+        floatBall.style.right = 'auto';
+        floatBall.style.bottom = 'auto';
+        floatBall.style.transition = 'none';
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        dragMoved = true;
+        const winW = window.innerWidth, winH = window.innerHeight;
+        const ballW = floatBall.offsetWidth, ballH = floatBall.offsetHeight;
+        let left = e.clientX - dragOffsetX;
+        let top = e.clientY - dragOffsetY;
+        left = Math.max(0, Math.min(winW - ballW, left));
+        top = Math.max(0, Math.min(winH - ballH, top));
+        floatBall.style.left = left + 'px';
+        floatBall.style.top = top + 'px';
+      });
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          setTimeout(() => { dragMoved = false; }, 0);
+          floatBall.style.transition = '';
+          document.body.style.userSelect = '';
+        }
+      });
+
+      // 展开悬浮框
+      floatBall.addEventListener('click', (e) => {
+        // 拖动时或刚拖动后不弹出
+        if (isDragging || dragMoved) return;
+        floatPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+        floatPanel.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+        setTimeout(() => floatInput.focus(), 200);
+      });
+
+      // 双击悬浮小球关闭输入框（不清空内容）
+      floatBall.addEventListener('dblclick', (e) => {
+        floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+        floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+      });
+
+      // 关闭悬浮框
+      floatClose.addEventListener('click', () => {
+        floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+        floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+      });
+
+      // 输入时自动渲染
+      floatInput.addEventListener('input', renderFloatTex);
+
+      function renderFloatTex() {
+        const tex = floatInput.value.trim();
+        if (!tex) {
+          floatOutput.innerHTML = '';
+          return;
+        }
+        floatOutput.innerHTML = `\\(${tex}\\)`;
+        if (window.MathJax) MathJax.typesetPromise([floatOutput]);
+      }
+
+      // 下载SVG（参考svg-copy-test.html）
+      downloadSvgBtn.addEventListener('click', async () => {
+        await MathJax.typesetPromise([floatOutput]);
+        let svg = null, tryCount = 0;
+        while (!svg && tryCount < 20) {
+          svg = floatOutput.querySelector('svg');
+          if (svg) break;
+          await new Promise(r => setTimeout(r, 50));
+          tryCount++;
+        }
+        if (!svg) {
+          alert('请先输入有效的LaTeX公式');
+          return;
+        }
+        const serializer = new XMLSerializer();
+        let svgStr = serializer.serializeToString(svg);
+        // 加xmlns属性，兼容firefox
+        svgStr = svgStr.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+        const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'latex.svg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
 </body>
+
 </html>
