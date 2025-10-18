@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG复制测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f8fafc; padding: 40px; }
+        .panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 24px #0001; max-width: 480px; margin: auto; padding: 32px 24px; }
+        textarea { width: 100%; font-size: 1.1em; padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
+        #output { min-height: 40px; background: #f3f4f6; border-radius: 6px; margin: 16px 0; padding: 12px; text-align: center; }
+        button { background: #10B981; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
+        button:hover { background: #059669; }
+        .tip { color: #888; font-size: 0.95em; margin-bottom: 8px; }
+        .select-row { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        select { padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 1em; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <div class="tip">输入LaTeX公式，选择格式并点击“下载”即可下载渲染后的图像</div>
+        <textarea id="input" rows="3" placeholder="如：x^2 + y^2 = z^2"></textarea>
+        <div id="output"></div>
+        <div class="select-row" style="margin-bottom:0;">
+            <label for="format">下载格式：</label>
+            <select id="format">
+                <option value="svg" selected>SVG</option>
+                <option value="png">PNG</option>
+            </select>
+            <button id="download-btn">下载</button>
+        </div>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const downloadBtn = document.getElementById('download-btn');
+        const formatSel = document.getElementById('format');
+
+        input.addEventListener('input', render);
+        async function render() {
+            const tex = input.value.trim();
+            if (!tex) {
+                output.innerHTML = '';
+                return;
+            }
+            output.innerHTML = `\\(${tex}\\)`;
+            if (window.MathJax) await MathJax.typesetPromise([output]);
+        }
+
+        downloadBtn.addEventListener('click', async () => {
+            await MathJax.typesetPromise([output]);
+            let svg = null, tryCount = 0;
+            while (!svg && tryCount < 20) {
+                svg = output.querySelector('svg');
+                if (svg) break;
+                await new Promise(r => setTimeout(r, 50));
+                tryCount++;
+            }
+            if (!svg) {
+                alert('请先输入有效的LaTeX公式');
+                return;
+            }
+            const serializer = new XMLSerializer();
+            const svgStr = serializer.serializeToString(svg);
+
+            const format = formatSel.value;
+            if (format === 'svg') {
+                // 下载SVG
+                const blob = new Blob([svgStr], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'latex.svg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } else if (format === 'png') {
+                // 下载PNG
+                const img = new Image();
+                // 需要加上xmlns属性，兼容firefox
+                let svgData = svgStr.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+                const svg64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    // 白底
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'latex.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 'image/png');
+                };
+                img.onerror = function() {
+                    alert('SVG转PNG失败');
+                };
+                img.src = svg64;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -171,6 +171,29 @@
         <span>已复制到剪贴板！</span>
     </div>
 
+    <!-- 悬浮小球及悬浮框 -->
+    <div id="float-ball" class="fixed bottom-8 right-8 z-50 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-all duration-200">
+        <i class="fa fa-pencil text-white text-2xl"></i>
+    </div>
+    <div id="float-panel" class="fixed bottom-28 right-8 z-50 w-96 max-w-[95vw] bg-white rounded-xl shadow-2xl p-5 flex flex-col gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95" style="min-width:260px;">
+        <!-- 关闭按钮 -->
+        <button id="float-close" class="absolute top-2 right-2 text-gray-400 hover:text-primary text-xl"><i class="fa fa-times"></i></button>
+        <!-- 输入区 -->
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">输入LaTeX公式：</label>
+            <textarea id="float-input" rows="3" class="w-full border border-gray-200 rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary/30 font-mono text-base resize-none" placeholder="输入LaTeX代码，如 x^2 + y^2 = z^2"></textarea>
+        </div>
+        <!-- 输出区 -->
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">渲染效果：</label>
+            <div id="float-output" class="min-h-[40px] bg-gray-50 rounded p-2 text-center"></div>
+        </div>
+        <!-- 复制按钮 -->
+        <button id="copy-svg-btn" class="mt-2 bg-secondary hover:bg-green-600 text-white font-semibold py-2 rounded transition-all flex items-center justify-center gap-2">
+            <i class="fa fa-copy"></i> 复制为svg图像
+        </button>
+    </div>
+
     <script>
         // 页面加载完成后，让使用说明1秒后自动消失
         document.addEventListener('DOMContentLoaded', () => {
@@ -539,6 +562,121 @@
                 }, 2000);
             }
         }
+
+        // 悬浮小球与悬浮框功能
+        (function() {
+            const floatBall = document.getElementById('float-ball');
+            const floatPanel = document.getElementById('float-panel');
+            const floatClose = document.getElementById('float-close');
+            const floatInput = document.getElementById('float-input');
+            const floatOutput = document.getElementById('float-output');
+            const copySvgBtn = document.getElementById('copy-svg-btn');
+
+            // 拖动相关变量
+            let isDragging = false;
+            let dragOffsetX = 0, dragOffsetY = 0;
+            let dragMoved = false;
+
+            // 允许拖动
+            floatBall.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDragging = true;
+                dragMoved = false;
+                const rect = floatBall.getBoundingClientRect();
+                dragOffsetX = e.clientX - rect.left;
+                dragOffsetY = e.clientY - rect.top;
+                floatBall.style.left = rect.left + 'px';
+                floatBall.style.top = rect.top + 'px';
+                floatBall.style.right = 'auto';
+                floatBall.style.bottom = 'auto';
+                floatBall.style.transition = 'none';
+                document.body.style.userSelect = 'none';
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                dragMoved = true;
+                const winW = window.innerWidth, winH = window.innerHeight;
+                const ballW = floatBall.offsetWidth, ballH = floatBall.offsetHeight;
+                let left = e.clientX - dragOffsetX;
+                let top = e.clientY - dragOffsetY;
+                left = Math.max(0, Math.min(winW - ballW, left));
+                top = Math.max(0, Math.min(winH - ballH, top));
+                floatBall.style.left = left + 'px';
+                floatBall.style.top = top + 'px';
+            });
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    setTimeout(() => { dragMoved = false; }, 0);
+                    floatBall.style.transition = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+
+            // 展开悬浮框
+            floatBall.addEventListener('click', (e) => {
+                // 拖动时或刚拖动后不弹出
+                if (isDragging || dragMoved) return;
+                floatPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+                floatPanel.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+                setTimeout(() => floatInput.focus(), 200);
+            });
+
+            // 双击悬浮小球关闭输入框（不清空内容）
+            floatBall.addEventListener('dblclick', (e) => {
+                floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+                floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+            });
+
+            // 关闭悬浮框
+            floatClose.addEventListener('click', () => {
+                floatPanel.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+                floatPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+            });
+
+            // 输入时自动渲染
+            floatInput.addEventListener('input', renderFloatTex);
+
+            function renderFloatTex() {
+                const tex = floatInput.value.trim();
+                if (!tex) {
+                    floatOutput.innerHTML = '';
+                    return;
+                }
+                floatOutput.innerHTML = `\\(${tex}\\)`;
+                if (window.MathJax) MathJax.typesetPromise([floatOutput]);
+            }
+
+            // 复制SVG到剪贴板（等待SVG渲染完成）
+            copySvgBtn.addEventListener('click', async () => {
+                await MathJax.typesetPromise([floatOutput]);
+                let svg = null, tryCount = 0;
+                while (!svg && tryCount < 20) {
+                    svg = floatOutput.querySelector('svg');
+                    if (svg) break;
+                    await new Promise(r => setTimeout(r, 50));
+                    tryCount++;
+                }
+                if (!svg) {
+                    alert('请先输入有效的LaTeX公式');
+                    return;
+                }
+                const serializer = new XMLSerializer();
+                const svgStr = serializer.serializeToString(svg);
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/svg+xml': new Blob([svgStr], {type: 'image/svg+xml'}) })
+                    ]);
+                } catch (e) {
+                    try {
+                        await navigator.clipboard.writeText(svgStr);
+                        alert('已复制SVG源码到剪贴板');
+                    } catch {
+                        alert('复制失败，请手动复制');
+                    }
+                }
+            });
+        })();
     </script>
 </body>
 </html>
