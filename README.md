@@ -21,7 +21,7 @@
 ## 反馈与支持
 
 - 报告问题：请在<a href="https://github.com/zhmvoid/LaTeXPaste/issues">**GitHub Issues**</a>中提交
-- 联系我们：发送邮件至<a href="mailto:hengmao.zh@foxmail.com"> **hengmao.zh@foxmail.com**</a>获取支持
+- 联系我们：发送邮件至<a href="mailto:hengmao.zh@outlook.com"> **hengmao.zh@foxmail.com**</a>获取支持
 
 ## 许可证
 
